@@ -1,0 +1,13 @@
+{
+    "python.linting.enabled": false,
+    "python.linting.pylintEnabled": true,
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./tests",
+        "-p",
+        "*_test.py"
+    ],
+    "python.testing.unittestEnabled": true,
+    "python.testing.pytestEnabled": false
+}

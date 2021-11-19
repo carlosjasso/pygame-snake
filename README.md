@@ -1,5 +1,5 @@
 # pygame-snake
-Repo to practice python by developing a version of the classic snake game
+This repo holds a personal project in which I practice the basics of the python language with the intent to learn it and practice.
 
 ## Environment setup
 - OS: Windows 10
@@ -7,3 +7,4 @@ Repo to practice python by developing a version of the classic snake game
 - Python: 3.10.0 + (pip & venv)
 - Create venv with `python3 -m venv .venv`
 - To activate venv, run `& .\.env\Scripts\Activate.ps1`
+- Restore dependencies with `pip install -r requirements.txt`
