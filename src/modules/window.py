@@ -1,8 +1,7 @@
 import pygame
 from pygame import Surface
 from pygame.locals import KEYDOWN, QUIT, K_ESCAPE
-from modules.configuration import Configuration
-# import window_props
+from src.modules.configuration import Configuration
 
 class Window:
     def __init__(self, config : Configuration) -> None:

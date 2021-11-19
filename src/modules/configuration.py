@@ -1,7 +1,7 @@
 from os import path
 from configparser import ConfigParser
-from ..models import constants
-from ..models.types import WindowProps
+from src.models import constants
+from src.models.types import WindowProps
 
 class Configuration:
     def __init__(self) -> None:
