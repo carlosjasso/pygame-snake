@@ -1,17 +1,22 @@
-import unittest
 from os import path
-from src.modules.configuration import Configuration
+from modules.configuration import Configuration
 
-class TestConfigurationModule(unittest.TestCase):
-    def test_init(self):
-        actual = Configuration()
-        self.assertTrue(actual)
-        self.assertEqual(path.basename(actual.paths["root"]), "pygame-snake")
-        self.assertTrue(actual._config)
+def test_init():
+    root = path.abspath(path.join(path.dirname(__file__), "..", ".."))
+    result = Configuration()
+    assert result
+    assert result.paths
+    assert len(result.paths) > 0
+    assert result.paths["root"] == root
+    assert result._config
+    assert len(result._config.sections()) > 0
 
-    def test_window(self):
-        config = Configuration()
-        actual = config.get_window_props()
-        self.assertTrue(actual)
-        self.assertTrue(actual.width)
-        self.assertTrue(actual.height)
+def test_get_window_props():
+    result = Configuration().get_window_props()
+    assert result
+    assert len(result.size) == 2
+
+def test_get_sprites_paths():
+    result = Configuration().get_sprites_props()
+    assert result
+    assert len(result) > 0

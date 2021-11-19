@@ -8,7 +8,7 @@
             "name": "Python: Game",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main.py",
+            "program": "${workspaceFolder}/app.py",
             "console": "integratedTerminal"
         }
     ]
