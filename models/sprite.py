@@ -4,8 +4,16 @@ from pygame import Surface
 Position = namedtuple("Position", ["x", "y"])
 
 class Sprite:
-    def __init__(self, name : str, path : str) -> None:
-        self.name = name
-        self.path = path
-        self.position = Position(x = 0, y = 0)
-        self.surface : Surface = None
+    surface : Surface
+    position_x : int
+    position_y : int
+    img_path : str
+
+    @property
+    def position(self):
+        return Position(self.position_x, self.position_y)
+
+    def __init__(self, img_path : str):
+        self.img_path = img_path
+        self.position_x = 0
+        self.position_y = 0

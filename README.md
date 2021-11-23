@@ -3,8 +3,10 @@ This repo holds a personal project in which I practice the basics of the python 
 
 ## Environment setup
 - OS: Windows 10
-- Editor/IDE: VSCode - some specific configurations for this editor might be found in the repo files
-- Python: 3.10.0 + (pip & venv)
-- Create venv with `python3 -m venv .venv`
+- Editor/IDE: [VSCode](https://code.visualstudio.com/) with [Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
+- [Python](https://www.python.org/downloads/) v3.10.0 + (pip & venv)
+- Create venv with `python -m venv .venv`
 - To activate venv, run `& .\.env\Scripts\Activate.ps1`
 - Restore dependencies with `pip install -r requirements.txt`
+
+Left at https://youtu.be/8dfePlONtls?t=1232
