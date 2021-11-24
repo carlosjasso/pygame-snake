@@ -1,3 +1,4 @@
+from pathlib import Path
 from collections import namedtuple
 from pygame import Surface
 
@@ -7,13 +8,13 @@ class Sprite:
     surface : Surface
     position_x : int
     position_y : int
-    img_path : str
+    img_path : Path
 
     @property
-    def position(self):
+    def position(self) -> Position:
         return Position(self.position_x, self.position_y)
 
-    def __init__(self, img_path : str):
+    def __init__(self, img_path : Path):
         self.img_path = img_path
         self.position_x = 0
         self.position_y = 0

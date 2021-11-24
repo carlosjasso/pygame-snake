@@ -1,12 +1,14 @@
-from os import path
-from models.configuration import Configuration
+from pathlib import Path
+from src.snake.models.configuration import Configuration
 
 def test_init():
-    expected = path.abspath(path.join(path.dirname(__file__), "..", "..", ".."))
+    expected_root = Path(__file__).parent.parent.parent.parent
     actual = Configuration()
-    assert actual
-    assert actual.root_path == expected
-    assert len(actual._config.sections()) > 0
+    assert actual.paths.ROOT == expected_root
+    for p in actual.paths: assert Path.exists(p)
+    assert type(actual.window.WindowSize.WIDTH) == int \
+        and type(actual.window.WindowSize.HEIGHT) == int
+    assert Path.exists(actual.sprites.BLOCK_PATH)
 
 def test_get_section():
     config = Configuration()

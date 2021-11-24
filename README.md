@@ -1,4 +1,4 @@
-# pygame-snake
+# snake 🐍
 This repo holds a personal project in which I practice the basics of the python language with the intent to learn it and practice.
 
 ## Environment setup
@@ -9,4 +9,8 @@ This repo holds a personal project in which I practice the basics of the python 
 - To activate venv, run `& .\.env\Scripts\Activate.ps1`
 - Restore dependencies with `pip install -r requirements.txt`
 
+## Tutorial video
 Left at https://youtu.be/8dfePlONtls?t=1232
+
+## References
+- [Project structure](https://github.com/pypa/sampleproject)
