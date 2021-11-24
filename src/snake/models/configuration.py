@@ -2,7 +2,7 @@ from collections import namedtuple
 from pathlib import Path
 from configparser import ConfigParser
 from .configuration_sprites import SpritesConfiguration
-from .configuration_window import WindowConfiguration, WindowSize
+from .configuration_display import DisplayConfiguration, WindowSize
 
 Paths = namedtuple("Paths", ["ROOT", "PROJECT"])
 
@@ -10,7 +10,7 @@ class Configuration:
     paths : Paths
     parser : ConfigParser
     sprites : SpritesConfiguration
-    window : WindowConfiguration
+    window : DisplayConfiguration
 
     def __init__(self):
         self.paths = self._build_paths()
@@ -31,11 +31,11 @@ class Configuration:
         result.read(cfg_path)
         return result
     
-    def _build_window_configuration(self) -> WindowConfiguration:
-        result = WindowConfiguration()
+    def _build_window_configuration(self) -> DisplayConfiguration:
+        result = DisplayConfiguration()
         result.WindowSize = WindowSize(
-            WIDTH = int(self.get_section("WINDOW")["width"]),
-            HEIGHT = int(self.get_section("WINDOW")["height"])
+            WIDTH = int(self.get_section("DISPLAY")["width"]),
+            HEIGHT = int(self.get_section("DISPLAY")["height"])
         )
         return result
     

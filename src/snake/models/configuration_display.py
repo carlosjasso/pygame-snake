@@ -2,5 +2,5 @@ from collections import namedtuple
 
 WindowSize = namedtuple("WindowSize", ["WIDTH", "HEIGHT"])
 
-class WindowConfiguration:
+class DisplayConfiguration:
     WindowSize : WindowSize
