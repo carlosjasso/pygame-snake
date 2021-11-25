@@ -10,7 +10,7 @@ This repo holds a personal project in which I practice the basics of the python 
 - Restore dependencies with `pip install -r requirements.txt`
 
 ## Tutorial video
-Left at https://youtu.be/8dfePlONtls?t=1232
+Left at https://youtu.be/8dfePlONtls?t=2181
 
 ## References
 - [Project structure](https://github.com/pypa/sampleproject)
