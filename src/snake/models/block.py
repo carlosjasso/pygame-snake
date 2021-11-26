@@ -1,6 +1,4 @@
 from pathlib import Path
-
-from pygame import surface
 import pygame
 from .sprite import Sprite
 

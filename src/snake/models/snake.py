@@ -1,47 +1,36 @@
 from collections import namedtuple
-from .block import Block
 from .configuration import Configuration
+from .block import Block
 from .snake_section import SnakeSection
 from .snake_direction import SnakeDirection
 
-Section = namedtuple("Section", ["name", "sprite"])
+Node = namedtuple("Node", ["name", "sprite"])
 
 class Snake:
     config : Configuration
-    body : set[Section]
+    body : set[Node]
     direction : SnakeDirection
 
     @property
     def head(self) -> Block:
-        section : Section = self.body[SnakeSection.HEAD]
-        return section.sprite
+        result : Node = self.body[SnakeSection.HEAD]
+        return result.sprite
 
     def __init__(self, config : Configuration):
         self.config = config
-        self.body = self._build_body()
+        self.body = self._build_snake()
         self.direction = SnakeDirection.RIGHT
-    
-    def _build_body(self) -> set[Section]:
-        result = []
-        sections = range(1)
-        for s in sections:
-            name : str
-            if s == sections[0]: name = SnakeSection.HEAD
-            elif s == sections[-1]: name = SnakeSection.TAIL
-            else: name = SnakeSection.SECTION
-            result.append(Section(name=name, sprite=Block(self.config.sprites.BLOCK_PATH)))
-        return result
 
-    def slither(self, direction = SnakeDirection.SAME):
-        block = self.head
-        if direction is not SnakeDirection.SAME:
-            self.direction = direction
-        match self.direction:
-            case SnakeDirection.UP:
-                block.move_up()
-            case SnakeDirection.DOWN:
-                block.move_down()
-            case SnakeDirection.LEFT:
-                block.move_left()
-            case SnakeDirection.RIGHT:
-                block.move_right()
+    def _build_snake(self) -> list[Node]:
+        result : list[Node] = []
+        nodes = [r for r in range(3)]
+        for n in nodes:
+            name : str
+            block = Block(self.config.sprites.BLOCK_PATH)
+            block.position_x = block.surface.get_width() * (n)
+            if n == 0: name = SnakeSection.HEAD
+            elif n == nodes[-1]: name = SnakeSection.TAIL
+            else: name = SnakeSection.SECTION
+            result.append(Node(name=name, sprite=block))
+        return result
+    
