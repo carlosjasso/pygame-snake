@@ -24,6 +24,12 @@ class Display:
         self.surface.fill(self.background_color) # clears screen
         self.surface.blit(sprite.surface, sprite.position)
         self.refresh()
+
+    def draw_sprites(self, sprites : list[Sprite]):
+        self.surface.fill(self.background_color) # clears screen
+        for sprite in sprites:
+            self.surface.blit(sprite.surface, sprite.position)
+        self.refresh()
     
     def refresh(self):
         # Update screen after a change

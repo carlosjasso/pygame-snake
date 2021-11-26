@@ -23,7 +23,7 @@ class Snake:
 
     def _build_snake(self) -> list[Node]:
         result : list[Node] = []
-        nodes = [r for r in range(3)]
+        nodes = [r for r in range(3)] # TODO: Change value to 1
         for n in nodes:
             name : str
             block = Block(self.config.sprites.BLOCK_PATH)

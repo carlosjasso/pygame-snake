@@ -4,32 +4,33 @@ from models.snake import Snake
 from models.configuration import Configuration
 from models.display import Display
 from models.snake_direction import SnakeDirection
-from models.block import Block
 
 class Game:
     config : Configuration
     display : Display
     snake : Snake
+    running : bool
 
     def __init__(self, config : Configuration) -> None:
         self.config = config
         self.display = Display(config)
         self.snake = Snake(config)
+        self.running = False
 
     def run(self):
-        self.display.draw_sprite(self.snake.head)
-
-        block = Block(self.config.sprites.BLOCK_PATH)
-        self.display.draw_sprite(block)
+        self.running = True
+        
+        sprites = [sprite for name, sprite in self.snake.body]
+        self.display.draw_sprites(sprites)
+        sleep(100)
 
         # Event loop
-        running = True
         block_direction = SnakeDirection.RIGHT
-        while running:
+        while self.running:
             for event in self.display.event:
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
-                        running = False
+                        self.running = False
                         continue
                     
                     if event.key == K_UP:
@@ -41,7 +42,7 @@ class Game:
                     elif event.key == K_RIGHT:
                         block_direction = SnakeDirection.RIGHT
                 elif event.type == QUIT:
-                    running = False
+                    self.running = False
                     continue
 
             match block_direction:
