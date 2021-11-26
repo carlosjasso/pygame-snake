@@ -40,15 +40,6 @@ class Game:
                 elif event.type == QUIT:
                     self.running = False
                     continue
-
-            # match block_direction:
-            #     case SnakeDirection.UP: block.move_up()
-            #     case SnakeDirection.DOWN: block.move_down()
-            #     case SnakeDirection.LEFT: block.move_left()
-            #     case SnakeDirection.RIGHT: block.move_right()
-
             self.snake.slither()
             self.display.draw_sprites(self.snake.blocks)
-
             sleep(0.2)
-            # self.display.draw_sprite(block)

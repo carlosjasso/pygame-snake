@@ -13,8 +13,8 @@ class Snake:
 
     @property
     def head(self) -> Block:
-        result : Node = self.body[SnakeSection.HEAD]
-        return result.sprite
+        node : Node = [node for node in self.body if node.name == SnakeSection.HEAD][0]
+        return node.sprite
     
     @property
     def blocks(self) -> list[Block]:
@@ -32,11 +32,27 @@ class Snake:
             name : str
             block = Block(self.config.sprites.BLOCK_PATH)
             block.position_x = block.surface.get_width() * (n)
-            if n == 0: name = SnakeSection.HEAD
-            elif n == nodes[-1]: name = SnakeSection.TAIL
+            # snake gets built from tail to head
+            if n == 0: name = SnakeSection.TAIL
+            elif n == nodes[-1]: name = SnakeSection.HEAD
             else: name = SnakeSection.SECTION
             result.append(Node(name=name, sprite=block))
         return result
     
-    def slither(self):
-        for block in self.blocks: block.move_right()            
+    def slither(self, direction : SnakeDirection = SnakeDirection.FORWARD):
+        previous_position = self.head.position
+        if direction != SnakeDirection.FORWARD and self.direction != direction:
+            self.direction = direction
+        for node in reversed(self.body):
+            block : Block = node.sprite
+            if node.name == SnakeSection.HEAD:
+                match self.direction:
+                    case SnakeDirection.UP: block.move_up()
+                    case SnakeDirection.DOWN: block.move_down()
+                    case SnakeDirection.LEFT: block.move_left()
+                    case SnakeDirection.RIGHT: block.move_right()
+            else:
+                temp_position = block.position
+                block.position_x = previous_position.x
+                block.position_y = previous_position.y
+                previous_position = temp_position
