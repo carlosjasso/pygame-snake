@@ -19,13 +19,9 @@ class Game:
 
     def run(self):
         self.running = True
+        self.display.draw_sprites(self.snake.blocks)
         
-        sprites = [sprite for name, sprite in self.snake.body]
-        self.display.draw_sprites(sprites)
-        sleep(100)
-
         # Event loop
-        block_direction = SnakeDirection.RIGHT
         while self.running:
             for event in self.display.event:
                 if event.type == KEYDOWN:
@@ -33,23 +29,26 @@ class Game:
                         self.running = False
                         continue
                     
-                    if event.key == K_UP:
-                        block_direction = SnakeDirection.UP
-                    elif event.key == K_DOWN:
-                        block_direction = SnakeDirection.DOWN
-                    elif event.key == K_LEFT:
-                        block_direction = SnakeDirection.LEFT
-                    elif event.key == K_RIGHT:
-                        block_direction = SnakeDirection.RIGHT
+                    # if event.key == K_UP:
+                    #     block_direction = SnakeDirection.UP
+                    # elif event.key == K_DOWN:
+                    #     block_direction = SnakeDirection.DOWN
+                    # elif event.key == K_LEFT:
+                    #     block_direction = SnakeDirection.LEFT
+                    # elif event.key == K_RIGHT:
+                    #     block_direction = SnakeDirection.RIGHT
                 elif event.type == QUIT:
                     self.running = False
                     continue
 
-            match block_direction:
-                case SnakeDirection.UP: block.move_up()
-                case SnakeDirection.DOWN: block.move_down()
-                case SnakeDirection.LEFT: block.move_left()
-                case SnakeDirection.RIGHT: block.move_right()
+            # match block_direction:
+            #     case SnakeDirection.UP: block.move_up()
+            #     case SnakeDirection.DOWN: block.move_down()
+            #     case SnakeDirection.LEFT: block.move_left()
+            #     case SnakeDirection.RIGHT: block.move_right()
+
+            self.snake.slither()
+            self.display.draw_sprites(self.snake.blocks)
 
             sleep(0.2)
-            self.display.draw_sprite(block)
+            # self.display.draw_sprite(block)

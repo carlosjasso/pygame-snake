@@ -15,6 +15,10 @@ class Snake:
     def head(self) -> Block:
         result : Node = self.body[SnakeSection.HEAD]
         return result.sprite
+    
+    @property
+    def blocks(self) -> list[Block]:
+        return [sprite for _, sprite in self.body]
 
     def __init__(self, config : Configuration):
         self.config = config
@@ -34,3 +38,5 @@ class Snake:
             result.append(Node(name=name, sprite=block))
         return result
     
+    def slither(self):
+        for block in self.blocks: block.move_right()            
