@@ -1,12 +1,23 @@
 from configparser import ConfigParser
 from pathlib import Path
-from .types.sprite_paths import Paths
-from .types.configuration_display import DisplayConfiguration
-from .types.window_size import WindowSize
-from .types.configuration_sprites import SpritesConfiguration
+from typing import NamedTuple
+
+class WindowSize(NamedTuple):
+    WIDTH : int
+    HEIGHT : int
+
+class DisplayConfiguration(NamedTuple):
+    WINDOW_SIZE : WindowSize
+
+class SpritesConfiguration(NamedTuple):
+    BLOCK_PATH : str
+
+class SpritesPaths(NamedTuple):
+    ROOT : str
+    PROJECT : str
 
 class Configuration:
-    paths : Paths
+    paths : SpritesPaths
     parser : ConfigParser
     sprites : SpritesConfiguration
     window : DisplayConfiguration
@@ -17,15 +28,15 @@ class Configuration:
         self.window = self._build_window_configuration()
         self.sprites = self._build_sprites_configuration()
     
-    def _build_paths(self) -> Paths:
+    def _build_paths(self) -> SpritesPaths:
         root = [p for p in Path(__file__).parents if Path.exists(Path.joinpath(p, "setup.py"))][0]
-        return Paths(
+        return SpritesPaths(
             ROOT = root.resolve(),
-            PROJECT = Path.joinpath(root, "src/snake").resolve()
+            PROJECT = Path.joinpath(root, "snake").resolve()
         )
     
     def _build_config_parser(self) -> ConfigParser:
-        cfg_path = Path.joinpath(self.paths.PROJECT, "app.cfg")
+        cfg_path = Path.joinpath(self.paths.PROJECT, "game.cfg")
         result = ConfigParser()
         result.read(cfg_path)
         return result

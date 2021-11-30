@@ -1,10 +1,9 @@
 from threading import Thread
 from time import sleep
-from models.snake import Snake
-from models.configuration import Configuration
-from models.display import Display
-from models.enums.snake_direction import SnakeDirection
-from models.enums.display_events import DisplayEvent
+from snake_model import Snake
+from configuration import Configuration
+from display import Display
+from enums import SnakeDirection, DisplayEvent, SnakeEvent
 
 class Game:
     config : Configuration
@@ -52,7 +51,11 @@ class Game:
     
     def snake_motion(self):
         while self.running:
-            self.snake.slither(self._next_direction)
-            self._next_direction = SnakeDirection.FORWARD
-            self.display.draw_sprites(self.snake.blocks)
-            sleep(0.2)
+            event = self.snake.slither(self._next_direction)
+            match event:
+                case SnakeEvent.MOVED:
+                    self._next_direction = SnakeDirection.FORWARD
+                    self.display.draw_sprites(self.snake.blocks)
+                    sleep(0.2)
+                case SnakeEvent.HIT_WALL:
+                    self.running = False

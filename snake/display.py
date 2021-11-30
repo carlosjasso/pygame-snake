@@ -3,15 +3,14 @@ from pygame.event import Event
 from pygame import Surface
 from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, K_UP, K_DOWN, K_LEFT, K_RIGHT
 from typing import NamedTuple
-from .configuration import Configuration
-from .sprite import Sprite
-from .enums.display_events import DisplayEvent
+from configuration import Configuration
+from sprites import Sprite
+from enums import DisplayEvent
 
-Color = NamedTuple("Color", [
-    ("Red", int),
-    ("Green", int),
-    ("Blue", int),
-])
+class Color(NamedTuple):
+    Red : int
+    Green : int
+    Blue : int
 
 class Display:
     surface : Surface

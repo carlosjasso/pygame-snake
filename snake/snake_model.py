@@ -1,14 +1,17 @@
-from .sprite import Position
-from .configuration import Configuration
-from .block import Block
-from .enums.snake_section import SnakeSection
-from .enums.snake_direction import SnakeDirection
-from .types.node import Node
+from configuration import Configuration, WindowSize
+from sprites import Position, Block, Sprite
+from typing import NamedTuple
+from enums import SnakeSection, SnakeDirection, SnakeEvent
+
+class Node(NamedTuple):
+    name : str
+    sprite : Sprite
 
 class Snake:
     config : Configuration
     body : list[Node]
     _direction : SnakeDirection
+    _land : WindowSize
 
     @property
     def direction(self) -> SnakeDirection:
@@ -16,7 +19,9 @@ class Snake:
     
     @direction.setter
     def direction(self, value : SnakeDirection):
-        if value != SnakeDirection.FORWARD and self._direction != self._get_coutner_direction(value):
+        if value != self._direction and \
+            value != SnakeDirection.FORWARD \
+            and self._direction != self._get_coutner_direction(value):
             self._direction = value
 
     @property
@@ -29,6 +34,7 @@ class Snake:
 
     def __init__(self, config : Configuration):
         self.config = config
+        self._land = config.window.WINDOW_SIZE
         self.body = self._build_snake()
         self._direction = SnakeDirection.RIGHT
 
@@ -41,7 +47,11 @@ class Snake:
     
     def _generate_node(self, index : int) -> Node:
         block = Block(self.config.sprites.BLOCK_PATH)
-        block.position = Position(block.surface.get_width() * (index), 0)
+        filler = int(self.config.window.WINDOW_SIZE.WIDTH / 2) - (block.surface.get_width() * 3)
+        block.position = Position(
+            X = block.surface.get_width() * (index) + filler,
+            Y = int(self.config.window.WINDOW_SIZE.HEIGHT / 2) - block.surface.get_height()
+        )
         return Node(name=self._get_nodename_by_index(index), sprite=block)
     
     def _get_nodename_by_index(self, index : int) -> SnakeSection:
@@ -50,11 +60,17 @@ class Snake:
         elif index == [r for r in range(3)][-1]: return SnakeSection.HEAD
         else: return SnakeSection.SECTION
     
-    def slither(self, direction : SnakeDirection = SnakeDirection.FORWARD):
+    def slither(self, direction : SnakeDirection = SnakeDirection.FORWARD) -> SnakeEvent:
         self.direction = direction
+        if self.head.touches_boundry(self.config.window.WINDOW_SIZE, self.direction):
+            return SnakeEvent.HIT_WALL
+        else: return self._slither()
+    
+    def _slither(self) -> SnakeEvent:
         position_pivot = self.head.position
         for node in self.body:
             position_pivot = self._update_node_position(node, position_pivot)
+        return SnakeEvent.MOVED
     
     def _update_node_position(self, node : Node, pivot_position : Position):
         if node.name == SnakeSection.HEAD:
