@@ -1,20 +1,27 @@
-from collections import namedtuple
+from .sprite import Position
 from .configuration import Configuration
 from .block import Block
-from .snake_section import SnakeSection
-from .snake_direction import SnakeDirection
-
-Node = namedtuple("Node", ["name", "sprite"])
+from .enums.snake_section import SnakeSection
+from .enums.snake_direction import SnakeDirection
+from .types.node import Node
 
 class Snake:
     config : Configuration
-    body : set[Node]
-    direction : SnakeDirection
+    body : list[Node]
+    _direction : SnakeDirection
+
+    @property
+    def direction(self) -> SnakeDirection:
+        return self._direction
+    
+    @direction.setter
+    def direction(self, value : SnakeDirection):
+        if value != SnakeDirection.FORWARD and self._direction != self._get_coutner_direction(value):
+            self._direction = value
 
     @property
     def head(self) -> Block:
-        node : Node = [node for node in self.body if node.name == SnakeSection.HEAD][0]
-        return node.sprite
+        return self.body[0].sprite
     
     @property
     def blocks(self) -> list[Block]:
@@ -23,36 +30,57 @@ class Snake:
     def __init__(self, config : Configuration):
         self.config = config
         self.body = self._build_snake()
-        self.direction = SnakeDirection.RIGHT
+        self._direction = SnakeDirection.RIGHT
 
     def _build_snake(self) -> list[Node]:
-        result : list[Node] = []
-        nodes = [r for r in range(3)] # TODO: Change value to 1
-        for n in nodes:
-            name : str
-            block = Block(self.config.sprites.BLOCK_PATH)
-            block.position_x = block.surface.get_width() * (n)
-            # snake gets built from tail to head
-            if n == 0: name = SnakeSection.TAIL
-            elif n == nodes[-1]: name = SnakeSection.HEAD
-            else: name = SnakeSection.SECTION
-            result.append(Node(name=name, sprite=block))
-        return result
+        nodes : list[Node] = []
+        for index in range(3):
+            nodes.append(self._generate_node(index))
+        # Reverse nodes for head to be index 0
+        return [n for n in reversed(nodes)]
+    
+    def _generate_node(self, index : int) -> Node:
+        block = Block(self.config.sprites.BLOCK_PATH)
+        block.position = Position(block.surface.get_width() * (index), 0)
+        return Node(name=self._get_nodename_by_index(index), sprite=block)
+    
+    def _get_nodename_by_index(self, index : int) -> SnakeSection:
+        # snake gets built from tail to head
+        if index == 0: return SnakeSection.TAIL
+        elif index == [r for r in range(3)][-1]: return SnakeSection.HEAD
+        else: return SnakeSection.SECTION
     
     def slither(self, direction : SnakeDirection = SnakeDirection.FORWARD):
-        previous_position = self.head.position
-        if direction != SnakeDirection.FORWARD and self.direction != direction:
-            self.direction = direction
-        for node in reversed(self.body):
-            block : Block = node.sprite
-            if node.name == SnakeSection.HEAD:
-                match self.direction:
-                    case SnakeDirection.UP: block.move_up()
-                    case SnakeDirection.DOWN: block.move_down()
-                    case SnakeDirection.LEFT: block.move_left()
-                    case SnakeDirection.RIGHT: block.move_right()
-            else:
-                temp_position = block.position
-                block.position_x = previous_position.x
-                block.position_y = previous_position.y
-                previous_position = temp_position
+        self.direction = direction
+        position_pivot = self.head.position
+        for node in self.body:
+            position_pivot = self._update_node_position(node, position_pivot)
+    
+    def _update_node_position(self, node : Node, pivot_position : Position):
+        if node.name == SnakeSection.HEAD:
+            self._update_head_position(node.sprite, self.direction)
+            return pivot_position
+        else:
+            return self._update_block_position(node.sprite, pivot_position)
+    
+    def _update_head_position(self, block : Block, direction : SnakeDirection):
+        match direction:
+            case SnakeDirection.UP: block.move_up()
+            case SnakeDirection.DOWN: block.move_down()
+            case SnakeDirection.LEFT: block.move_left()
+            case SnakeDirection.RIGHT: block.move_right()
+    
+    def _update_block_position(self, block : Block, previous_position : Position) -> Position:
+        """
+        Updates the block with the given position and returns the previous position value.
+        """
+        temp_position = block.position
+        block.position = Position(previous_position.X, previous_position.Y)
+        return temp_position
+
+    def _get_coutner_direction(self, direction : SnakeDirection) -> SnakeDirection:
+        match direction:
+            case SnakeDirection.UP: return SnakeDirection.DOWN
+            case SnakeDirection.DOWN: return SnakeDirection.UP
+            case SnakeDirection.LEFT: return SnakeDirection.RIGHT
+            case SnakeDirection.RIGHT: return SnakeDirection.LEFT

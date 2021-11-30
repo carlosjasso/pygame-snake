@@ -1,10 +1,9 @@
-from collections import namedtuple
-from pathlib import Path
 from configparser import ConfigParser
-from .configuration_sprites import SpritesConfiguration
-from .configuration_display import DisplayConfiguration, WindowSize
-
-Paths = namedtuple("Paths", ["ROOT", "PROJECT"])
+from pathlib import Path
+from .types.sprite_paths import Paths
+from .types.configuration_display import DisplayConfiguration
+from .types.window_size import WindowSize
+from .types.configuration_sprites import SpritesConfiguration
 
 class Configuration:
     paths : Paths
@@ -32,17 +31,16 @@ class Configuration:
         return result
     
     def _build_window_configuration(self) -> DisplayConfiguration:
-        result = DisplayConfiguration()
-        result.WindowSize = WindowSize(
-            WIDTH = int(self.get_section("DISPLAY")["width"]),
-            HEIGHT = int(self.get_section("DISPLAY")["height"])
+        return DisplayConfiguration(
+            WindowSize(
+                WIDTH = int(self.get_section("DISPLAY")["width"]),
+                HEIGHT = int(self.get_section("DISPLAY")["height"]))
         )
-        return result
     
     def _build_sprites_configuration(self) -> SpritesConfiguration:
-        result = SpritesConfiguration()
-        result.BLOCK_PATH = Path.joinpath(self.paths.ROOT, self.get_section("SPRITES")["block"])
-        return result
+        return SpritesConfiguration(
+            BLOCK_PATH = Path.joinpath(self.paths.ROOT, self.get_section("SPRITES")["block"])
+        )
     
     def get_section(self, section_name : str) -> dict[str, str]:
         """
