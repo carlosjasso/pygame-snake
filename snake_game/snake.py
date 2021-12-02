@@ -1,3 +1,5 @@
+from pathlib import Path
+from math import floor
 from configuration import Configuration, WindowSize
 from sprites import Position, Block, Sprite
 from typing import NamedTuple
@@ -8,9 +10,9 @@ class Node(NamedTuple):
     sprite : Sprite
 
 class Snake:
-    config : Configuration
     body : list[Node]
     _direction : SnakeDirection
+    _block_path : Path
     _land : WindowSize
 
     @property
@@ -33,36 +35,39 @@ class Snake:
         return [sprite for _, sprite in self.body]
 
     def __init__(self, config : Configuration):
-        self.config = config
         self._land = config.window.WINDOW_SIZE
-        self.body = self._build_snake()
+        self._block_path = config.sprites.BLOCK_PATH
         self._direction = SnakeDirection.RIGHT
+        self.body = self._build_snake()
 
     def _build_snake(self) -> list[Node]:
         nodes : list[Node] = []
         for index in range(3):
             nodes.append(self._generate_node(index))
-        # Reverse nodes for head to be index 0
-        return [n for n in reversed(nodes)]
+        return nodes
     
     def _generate_node(self, index : int) -> Node:
-        block = Block(self.config.sprites.BLOCK_PATH)
-        filler = int(self.config.window.WINDOW_SIZE.WIDTH / 2) - (block.surface.get_width() * 3)
-        block.position = Position(
-            X = block.surface.get_width() * (index) + filler,
-            Y = int(self.config.window.WINDOW_SIZE.HEIGHT / 2) - block.surface.get_height()
-        )
+        block = Block(self._block_path)
+        block.position = self._generate_block_position(index, block)
         return Node(name=self._get_nodename_by_index(index), sprite=block)
     
+    def _generate_block_position(self, index : int, block : Block) -> Position:
+        x_places = floor((self._land.WIDTH / block.surface.get_width()) / 2) * block.surface.get_width()
+        y_places = floor((self._land.HEIGHT / block.surface.get_height()) / 2) * block.surface.get_height()
+        diff = block.surface.get_width() * index
+        return Position(
+            X = x_places - diff, 
+            Y = y_places
+        )
+    
     def _get_nodename_by_index(self, index : int) -> SnakeSection:
-        # snake gets built from tail to head
-        if index == 0: return SnakeSection.TAIL
-        elif index == [r for r in range(3)][-1]: return SnakeSection.HEAD
+        if index == 0: return SnakeSection.HEAD
+        elif index == [r for r in range(3)][-1]: return SnakeSection.TAIL
         else: return SnakeSection.SECTION
     
     def slither(self, direction : SnakeDirection = SnakeDirection.FORWARD) -> SnakeEvent:
         self.direction = direction
-        if self.head.touches_boundry(self.config.window.WINDOW_SIZE, self.direction):
+        if self.head.touches_boundry(self._land, self.direction):
             return SnakeEvent.HIT_WALL
         else: return self._slither()
     

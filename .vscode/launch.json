@@ -8,7 +8,7 @@
             "name": "Python: Game",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/snake/main.py",
+            "program": "${workspaceFolder}/snake_game/main.py",
             "console": "integratedTerminal"
         }
     ]

@@ -10,11 +10,12 @@ class DisplayConfiguration(NamedTuple):
     WINDOW_SIZE : WindowSize
 
 class SpritesConfiguration(NamedTuple):
-    BLOCK_PATH : str
+    BLOCK_PATH : Path
+    APPLE_PATH : Path
 
 class SpritesPaths(NamedTuple):
-    ROOT : str
-    PROJECT : str
+    ROOT : Path
+    PROJECT : Path
 
 class Configuration:
     paths : SpritesPaths
@@ -32,7 +33,7 @@ class Configuration:
         root = [p for p in Path(__file__).parents if Path.exists(Path.joinpath(p, "setup.py"))][0]
         return SpritesPaths(
             ROOT = root.resolve(),
-            PROJECT = Path.joinpath(root, "snake").resolve()
+            PROJECT = Path.joinpath(root, "snake_game").resolve()
         )
     
     def _build_config_parser(self) -> ConfigParser:
@@ -50,7 +51,8 @@ class Configuration:
     
     def _build_sprites_configuration(self) -> SpritesConfiguration:
         return SpritesConfiguration(
-            BLOCK_PATH = Path.joinpath(self.paths.ROOT, self.get_section("SPRITES")["block"])
+            BLOCK_PATH = Path.joinpath(self.paths.ROOT, self.get_section("SPRITES")["block"]),
+            APPLE_PATH = Path.joinpath(self.paths.ROOT, self.get_section("SPRITES")["apple"]),
         )
     
     def get_section(self, section_name : str) -> dict[str, str]:
