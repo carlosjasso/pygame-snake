@@ -3,7 +3,7 @@ from typing import NamedTuple
 import pygame
 from pygame import Surface
 from configuration import WindowSize
-from enums import SnakeDirection
+from models.enum import SnakeDirection
 
 class Position(NamedTuple):
     X : int

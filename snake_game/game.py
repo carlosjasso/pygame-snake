@@ -3,7 +3,7 @@ from time import sleep
 from snake import Snake
 from configuration import Configuration
 from display import Display
-from enums import SnakeDirection, DisplayEvent, SnakeEvent
+from models.enum import SnakeDirection, DisplayEvent, SnakeEvent
 from apple import Apple
 
 class Game:

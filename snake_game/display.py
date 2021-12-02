@@ -5,7 +5,7 @@ from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, K_UP, K_DOWN, K_LEFT, K_RIGHT
 from typing import NamedTuple
 from configuration import Configuration
 from sprites import Sprite
-from enums import DisplayEvent
+from models.enum import DisplayEvent
 
 class Color(NamedTuple):
     Red : int

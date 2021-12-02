@@ -3,7 +3,7 @@ from math import floor
 from configuration import Configuration, WindowSize
 from sprites import Position, Block, Sprite
 from typing import NamedTuple
-from enums import SnakeSection, SnakeDirection, SnakeEvent
+from models.enum import SnakeSection, SnakeDirection, SnakeEvent
 
 class Node(NamedTuple):
     name : str
