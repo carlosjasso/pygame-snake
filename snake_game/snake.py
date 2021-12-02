@@ -1,19 +1,14 @@
-from pathlib import Path
 from math import floor
-from configuration import Configuration, WindowSize
-from sprites import Position, Block, Sprite
-from typing import NamedTuple
-from models.enum import SnakeSection, SnakeDirection, SnakeEvent
-
-class Node(NamedTuple):
-    name : str
-    sprite : Sprite
+from pathlib import Path
+from data.types import SpritePosition, SnakeNode, WindowSize
+from data.enum import SnakeSection, SnakeDirection, SnakeEvent
+from sprites import Block
 
 class Snake:
-    body : list[Node]
+    body : list[SnakeNode]
     _direction : SnakeDirection
     _block_path : Path
-    _land : WindowSize
+    _field : WindowSize
 
     @property
     def direction(self) -> SnakeDirection:
@@ -34,28 +29,28 @@ class Snake:
     def blocks(self) -> list[Block]:
         return [sprite for _, sprite in self.body]
 
-    def __init__(self, config : Configuration):
-        self._land = config.window.WINDOW_SIZE
-        self._block_path = config.sprites.BLOCK_PATH
+    def __init__(self, window_size : WindowSize, img_path : Path):
+        self._field = window_size
+        self._block_path = img_path
         self._direction = SnakeDirection.RIGHT
         self.body = self._build_snake()
 
-    def _build_snake(self) -> list[Node]:
-        nodes : list[Node] = []
+    def _build_snake(self) -> list[SnakeNode]:
+        nodes : list[SnakeNode] = []
         for index in range(3):
             nodes.append(self._generate_node(index))
         return nodes
     
-    def _generate_node(self, index : int) -> Node:
+    def _generate_node(self, index : int) -> SnakeNode:
         block = Block(self._block_path)
         block.position = self._generate_block_position(index, block)
-        return Node(name=self._get_nodename_by_index(index), sprite=block)
+        return SnakeNode(name=self._get_nodename_by_index(index), sprite=block)
     
-    def _generate_block_position(self, index : int, block : Block) -> Position:
-        x_places = floor((self._land.WIDTH / block.surface.get_width()) / 2) * block.surface.get_width()
-        y_places = floor((self._land.HEIGHT / block.surface.get_height()) / 2) * block.surface.get_height()
+    def _generate_block_position(self, index : int, block : Block) -> SpritePosition:
+        x_places = floor((self._field.WIDTH / block.surface.get_width()) / 2) * block.surface.get_width()
+        y_places = floor((self._field.HEIGHT / block.surface.get_height()) / 2) * block.surface.get_height()
         diff = block.surface.get_width() * index
-        return Position(
+        return SpritePosition(
             X = x_places - diff, 
             Y = y_places
         )
@@ -67,7 +62,7 @@ class Snake:
     
     def slither(self, direction : SnakeDirection = SnakeDirection.FORWARD) -> SnakeEvent:
         self.direction = direction
-        if self.head.touches_boundry(self._land, self.direction):
+        if self.head.touches_boundry(self._field, self.direction):
             return SnakeEvent.HIT_WALL
         else: return self._slither()
     
@@ -77,7 +72,7 @@ class Snake:
             position_pivot = self._update_node_position(node, position_pivot)
         return SnakeEvent.MOVED
     
-    def _update_node_position(self, node : Node, pivot_position : Position):
+    def _update_node_position(self, node : SnakeNode, pivot_position : SpritePosition):
         if node.name == SnakeSection.HEAD:
             self._update_head_position(node.sprite, self.direction)
             return pivot_position
@@ -91,12 +86,12 @@ class Snake:
             case SnakeDirection.LEFT: block.move_left()
             case SnakeDirection.RIGHT: block.move_right()
     
-    def _update_block_position(self, block : Block, previous_position : Position) -> Position:
+    def _update_block_position(self, block : Block, previous_position : SpritePosition) -> SpritePosition:
         """
         Updates the block with the given position and returns the previous position value.
         """
         temp_position = block.position
-        block.position = Position(previous_position.X, previous_position.Y)
+        block.position = SpritePosition(previous_position.X, previous_position.Y)
         return temp_position
 
     def _get_coutner_direction(self, direction : SnakeDirection) -> SnakeDirection:

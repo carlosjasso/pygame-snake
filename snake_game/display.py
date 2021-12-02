@@ -2,15 +2,9 @@ import pygame
 from pygame.event import Event
 from pygame import Surface
 from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, K_UP, K_DOWN, K_LEFT, K_RIGHT
-from typing import NamedTuple
-from configuration import Configuration
 from sprites import Sprite
-from models.enum import DisplayEvent
-
-class Color(NamedTuple):
-    Red : int
-    Green : int
-    Blue : int
+from data.enum import DisplayEvent
+from data.types import Color, WindowSize
 
 class Display:
     surface : Surface
@@ -25,7 +19,13 @@ class Display:
         for event in pygame.event.get():
             result.append(self._pygame_event_to_dosplay_event(event))
         return result
-    
+
+    def __init__(self, window_size : WindowSize) -> None:
+        # Inits pygame display and setup window size
+        # pygame must be initted before building the sprites
+        pygame.init()
+        self.surface = pygame.display.set_mode(window_size)
+        
     def _pygame_event_to_dosplay_event(self, event : Event) -> DisplayEvent:
         if event.type == QUIT:
             return DisplayEvent.EXIT
@@ -38,12 +38,6 @@ class Display:
         elif key == K_DOWN: return DisplayEvent.MOVE_DOWN
         elif key == K_LEFT: return DisplayEvent.MOVE_LEFT
         elif key == K_RIGHT: return DisplayEvent.MOVE_RIGHT
-
-    def __init__(self, config : Configuration) -> None:
-        # Inits pygame display and setup window size
-        # pygame must be initted before building the sprites
-        pygame.init()
-        self.surface = pygame.display.set_mode(config.window.WINDOW_SIZE)
     
     def draw_sprite(self, sprite : Sprite):
         self.surface.fill(self.background_color) # clears screen

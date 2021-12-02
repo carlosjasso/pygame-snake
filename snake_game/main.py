@@ -1,8 +1,7 @@
-from configuration import Configuration
 from game import Game
 
 def main():
-    Game(Configuration()).run()
+    Game().run()
 
 if __name__ == "__main__": # entry point
     main()
