@@ -3,11 +3,14 @@ from pathlib import Path
 from data.types import WindowSize, DisplayConfiguration, SpritesConfiguration, SpritesPaths
 
 class Configuration:
+    #region attributes & Properties
     _parser : ConfigParser
     paths : SpritesPaths
     sprites : SpritesConfiguration
     window : DisplayConfiguration
+    #endregion
 
+    #region Init
     def __init__(self):
         self.paths = self._build_paths()
         self._parser = self._build_config_parser()
@@ -39,9 +42,12 @@ class Configuration:
             BLOCK_PATH = Path.joinpath(self.paths.ROOT, self._get_section("SPRITES")["block"]),
             APPLE_PATH = Path.joinpath(self.paths.ROOT, self._get_section("SPRITES")["apple"]),
         )
+    #endregion
     
+    #region helpers
     def _get_section(self, section_name : str) -> dict[str, str]:
         """
         Returns a dictionary with the key/value pairs in the specified config parser section.
         """
         return dict(self._parser[section_name])
+    #endregion

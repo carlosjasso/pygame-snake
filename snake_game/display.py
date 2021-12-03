@@ -7,6 +7,7 @@ from data.enum import DisplayEvent
 from data.types import Color, WindowSize
 
 class Display:
+    #region Attributes & Properties
     surface : Surface
 
     @property
@@ -19,6 +20,7 @@ class Display:
         for event in pygame.event.get():
             result.append(self._pygame_event_to_dosplay_event(event))
         return result
+    #endregion
 
     def __init__(self, window_size : WindowSize) -> None:
         # Inits pygame display and setup window size
@@ -38,11 +40,6 @@ class Display:
         elif key == K_DOWN: return DisplayEvent.MOVE_DOWN
         elif key == K_LEFT: return DisplayEvent.MOVE_LEFT
         elif key == K_RIGHT: return DisplayEvent.MOVE_RIGHT
-    
-    def draw_sprite(self, sprite : Sprite):
-        self.surface.fill(self.background_color) # clears screen
-        self.surface.blit(sprite.surface, sprite.position)
-        self.refresh()
 
     def draw_sprites(self, sprites : list[Sprite]):
         self.surface.fill(self.background_color) # clears screen
