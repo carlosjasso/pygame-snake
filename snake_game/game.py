@@ -1,12 +1,15 @@
 from threading import Thread
 from time import sleep
+from random import randrange
 from snake import Snake
 from configuration import Configuration
 from display import Display
 from data.enum import SnakeDirection, DisplayEvent, SnakeEvent
+from data.types import SpritePosition
 from sprites import Apple
 
 class Game:
+    #region Attributes & Properties
     config : Configuration
     _running : bool
     _next_direction : SnakeDirection
@@ -25,7 +28,9 @@ class Game:
             case DisplayEvent.MOVE_DOWN: self._next_direction = SnakeDirection.DOWN
             case DisplayEvent.MOVE_LEFT: self._next_direction = SnakeDirection.LEFT
             case DisplayEvent.MOVE_RIGHT: self._next_direction = SnakeDirection.RIGHT
+    #endregion
 
+    #region Init
     def __init__(self) -> None:
         self.config = Configuration()
         self._running = False
@@ -44,15 +49,16 @@ class Game:
             window_size = self.config.window.WINDOW_SIZE,
             img_path = self.config.sprites.APPLE_PATH
         )
+        self.apple.position = self.generate_new_apple_position()
+    #endregion
 
     def run(self):
         self._running = True
-        self.display.draw_sprites([*self.snake.blocks, self.apple])
-        sleep(0.2)
-        Thread(target=self.snake_motion).start()
-        self.listen_events()
+        self._spawn_sprites()
+        Thread(target=self._snake_motion).start()
+        self._listen_events()
     
-    def listen_events(self):
+    def _listen_events(self):
         while self._running:
             for event in self.display.events:
                 self._pipe_event(event)
@@ -63,13 +69,29 @@ class Game:
         else: 
             self.next_direction = event
     
-    def snake_motion(self):
+    def _snake_motion(self):
         while self._running:
-            event = self.snake.slither(self._next_direction)
-            match event:
-                case SnakeEvent.MOVED:
-                    self._next_direction = SnakeDirection.FORWARD
-                    self.display.draw_sprites([*self.snake.blocks, self.apple])
-                    sleep(0.2)
-                case SnakeEvent.HIT_WALL:
-                    self._running = False
+            match self.snake.slither(self.apple.position, self._next_direction):
+                case SnakeEvent.MOVED: self._snake_did_move()
+                case SnakeEvent.CRASHED: self._running = False
+                case SnakeEvent.HIT_APPLE: self._snake_hit_apple()
+    
+    def _snake_did_move(self):
+        self._next_direction = SnakeDirection.FORWARD
+        self._spawn_sprites()
+
+    def _snake_hit_apple(self):
+        self.apple.position = self.generate_new_apple_position()
+        self.snake.grow_node()
+        self._snake_did_move()
+    
+    def _spawn_sprites(self):
+        self.display.draw_sprites([self.apple, *self.snake.blocks])
+        sleep(0.2)
+    
+    def generate_new_apple_position(self) -> SpritePosition:
+        x = randrange(0, self.config.window.WINDOW_SIZE.WIDTH, self.apple.surface.get_width())
+        y = randrange(0, self.config.window.WINDOW_SIZE.HEIGHT, self.apple.surface.get_height())
+        if len([b for b in self.snake.blocks if b.position.X == x and b.position.Y == y]) > 0:
+            return self.generate_new_apple_position()
+        else: return SpritePosition(x, y)

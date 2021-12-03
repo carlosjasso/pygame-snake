@@ -1,10 +1,12 @@
 from math import floor
+from os import name
 from pathlib import Path
 from data.types import SpritePosition, SnakeNode, WindowSize
 from data.enum import SnakeSection, SnakeDirection, SnakeEvent
 from sprites import Block
 
 class Snake:
+    #region Attributes & Properties
     body : list[SnakeNode]
     _direction : SnakeDirection
     _block_path : Path
@@ -18,7 +20,7 @@ class Snake:
     def direction(self, value : SnakeDirection):
         if value != self._direction and \
             value != SnakeDirection.FORWARD \
-            and self._direction != self._get_coutner_direction(value):
+            and self._direction != self._get_counter_direction(value):
             self._direction = value
 
     @property
@@ -28,7 +30,9 @@ class Snake:
     @property
     def blocks(self) -> list[Block]:
         return [sprite for _, sprite in self.body]
+    #endregion
 
+    #region Init
     def __init__(self, window_size : WindowSize, img_path : Path):
         self._field = window_size
         self._block_path = img_path
@@ -59,11 +63,18 @@ class Snake:
         if index == 0: return SnakeSection.HEAD
         elif index == [r for r in range(3)][-1]: return SnakeSection.TAIL
         else: return SnakeSection.SECTION
+    #endregion
     
-    def slither(self, direction : SnakeDirection = SnakeDirection.FORWARD) -> SnakeEvent:
+    #region Slither
+    def slither(self, apple_position : SpritePosition, direction : SnakeDirection = SnakeDirection.FORWARD) -> SnakeEvent:
         self.direction = direction
-        if self.head.touches_boundry(self._field, self.direction):
-            return SnakeEvent.HIT_WALL
+        return self._process_event(apple_position)
+    
+    def _process_event(self, apple_position) -> SnakeEvent:
+        if self.head.touches_boundry(self._field, self.direction) or self.touches_self():
+            return SnakeEvent.CRASHED
+        elif self.head.touches_apple(apple_position):
+            return SnakeEvent.HIT_APPLE
         else: return self._slither()
     
     def _slither(self) -> SnakeEvent:
@@ -93,10 +104,51 @@ class Snake:
         temp_position = block.position
         block.position = SpritePosition(previous_position.X, previous_position.Y)
         return temp_position
+    #endregion
 
-    def _get_coutner_direction(self, direction : SnakeDirection) -> SnakeDirection:
+    #region Touches Self
+    def touches_self(self) -> bool:
+        match self.direction:
+            case SnakeDirection.UP: return self._touches_self_up()
+            case SnakeDirection.DOWN: return self._touches_self_down()
+            case SnakeDirection.LEFT: return self._touches_self_left()
+            case SnakeDirection.RIGHT: return self._touches_self_right()
+    
+    def _touches_self_up(self) -> bool:
+        return len([b for b in self.blocks
+            if b.position.X == self.head.position.X
+            and b.position.Y == (self.head.position.Y - self.head.surface.get_height())]) > 0
+    
+    def _touches_self_down(self) -> bool:
+        return len([b for b in self.blocks
+            if b.position.X == self.head.position.X
+            and b.position.Y == (self.head.position.Y + self.head.surface.get_height())]) > 0
+    
+    def _touches_self_left(self) -> bool:
+        return len([b for b in self.blocks
+            if b.position.X == (self.head.position.X - self.head.surface.get_width())
+            and b.position.Y == self.head.position.Y]) > 0
+    
+    def _touches_self_right(self) -> bool:
+        return len([b for b in self.blocks
+            if b.position.X == (self.head.position.X + self.head.surface.get_width())
+            and b.position.Y == self.head.position.Y]) > 0
+    #endregion
+
+    def grow_node(self):
+        self.body[-1] = SnakeNode(name = SnakeSection.SECTION, sprite = self.body[-1].sprite)
+        block = Block(self._block_path)
+        block.position = self.body[-1].sprite.position
+        self.body.append(SnakeNode(
+            name = SnakeSection.TAIL,
+            sprite = block
+        ))
+
+    #region Helpers
+    def _get_counter_direction(self, direction : SnakeDirection) -> SnakeDirection:
         match direction:
             case SnakeDirection.UP: return SnakeDirection.DOWN
             case SnakeDirection.DOWN: return SnakeDirection.UP
             case SnakeDirection.LEFT: return SnakeDirection.RIGHT
             case SnakeDirection.RIGHT: return SnakeDirection.LEFT
+    #endregion
