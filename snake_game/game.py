@@ -16,6 +16,7 @@ class Game:
     display : Display
     snake : Snake
     apple : Apple
+    _delay : float
 
     @property
     def next_direction(self) -> SnakeDirection:
@@ -35,6 +36,7 @@ class Game:
         self.config = Configuration()
         self._running = False
         self._next_direction = SnakeDirection.FORWARD
+        self._delay = self.config.game.DELAY
         self._load_modules()
         
     def _load_modules(self):
@@ -83,11 +85,12 @@ class Game:
     def _snake_hit_apple(self):
         self.apple.position = self.generate_new_apple_position()
         self.snake.grow_node()
+        self._delay *= self.config.game.DELAY_MULTIPLIER
         self._snake_did_move()
     
     def _spawn_sprites(self):
         self.display.draw_sprites([self.apple, *self.snake.blocks])
-        sleep(0.2)
+        sleep(self._delay)
     
     def generate_new_apple_position(self) -> SpritePosition:
         x = randrange(0, self.config.window.WINDOW_SIZE.WIDTH, self.apple.surface.get_width())

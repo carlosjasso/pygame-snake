@@ -1,19 +1,21 @@
 from configparser import ConfigParser
 from pathlib import Path
-from data.types import WindowSize, DisplayConfiguration, SpritesConfiguration, SpritesPaths
+from data.types import GameConfiguration, WindowSize, DisplayConfiguration, SpritesConfiguration, SpritesPaths
 
 class Configuration:
     #region attributes & Properties
     _parser : ConfigParser
     paths : SpritesPaths
-    sprites : SpritesConfiguration
+    game : GameConfiguration
     window : DisplayConfiguration
+    sprites : SpritesConfiguration
     #endregion
 
     #region Init
     def __init__(self):
         self.paths = self._build_paths()
         self._parser = self._build_config_parser()
+        self.game = self._build_game_configuration()
         self.window = self._build_window_configuration()
         self.sprites = self._build_sprites_configuration()
     
@@ -29,6 +31,12 @@ class Configuration:
         result = ConfigParser()
         result.read(cfg_path)
         return result
+
+    def _build_game_configuration(self) -> GameConfiguration:
+        return GameConfiguration(
+            DELAY = float(self._get_section("GAME")["delay"]),
+            DELAY_MULTIPLIER = float(self._get_section("GAME")["delaymultiplier"])
+        )
     
     def _build_window_configuration(self) -> DisplayConfiguration:
         return DisplayConfiguration(
