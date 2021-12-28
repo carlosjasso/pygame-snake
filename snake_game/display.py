@@ -13,7 +13,7 @@ class Display:
     @property
     def background_color(self):
         return Color(154, 204, 153) # HEX color #9acc99
-    
+
     @property
     def events(self) -> list[DisplayEvent]:
         result : list[DisplayEvent] = []
@@ -27,13 +27,13 @@ class Display:
         # pygame must be initted before building the sprites
         pygame.init()
         self.surface = pygame.display.set_mode(window_size)
-        
+
     def _pygame_event_to_dosplay_event(self, event : Event) -> DisplayEvent:
         if event.type == QUIT:
             return DisplayEvent.EXIT
         elif event.type == KEYDOWN:
             return self._pygame_key_to_display_event(event.key)
-    
+
     def _pygame_key_to_display_event(self, key : int) -> DisplayEvent:
         if key == K_ESCAPE: return DisplayEvent.EXIT
         elif key == K_UP: return DisplayEvent.MOVE_UP
@@ -46,7 +46,7 @@ class Display:
         for sprite in sprites:
             self.surface.blit(sprite.surface, sprite.position)
         self.refresh()
-    
+
     def refresh(self):
         # Update screen after a change
         #   display.flip() will update the contents of the entire display

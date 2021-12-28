@@ -6,7 +6,7 @@ from configuration import Configuration
 from display import Display
 from data.enum import SnakeDirection, DisplayEvent, SnakeEvent
 from data.types import SpritePosition
-from sprites import Apple
+from sprites import Apple, Score
 
 class Game:
     #region Attributes & Properties
@@ -16,6 +16,7 @@ class Game:
     display : Display
     snake : Snake
     apple : Apple
+    score : Score
     _delay : float
 
     @property
@@ -38,7 +39,7 @@ class Game:
         self._next_direction = SnakeDirection.FORWARD
         self._delay = self.config.game.DELAY
         self._load_modules()
-        
+
     def _load_modules(self):
         self.display = Display(
             window_size = self.config.window.WINDOW_SIZE
@@ -51,6 +52,9 @@ class Game:
             window_size = self.config.window.WINDOW_SIZE,
             img_path = self.config.sprites.APPLE_PATH
         )
+        self.score = Score(
+            window_size = self.config.window.WINDOW_SIZE
+        )
         self.apple.position = self.generate_new_apple_position()
     #endregion
 
@@ -59,25 +63,25 @@ class Game:
         self._spawn_sprites()
         Thread(target=self._snake_motion).start()
         self._listen_events()
-    
+
     def _listen_events(self):
         while self._running:
             for event in self.display.events:
                 self._pipe_event(event)
-    
+
     def _pipe_event(self, event : DisplayEvent):
-        if event == DisplayEvent.EXIT: 
+        if event == DisplayEvent.EXIT:
             self._running = False
-        else: 
+        else:
             self.next_direction = event
-    
+
     def _snake_motion(self):
         while self._running:
             match self.snake.slither(self.apple.position, self._next_direction):
                 case SnakeEvent.MOVED: self._snake_did_move()
                 case SnakeEvent.CRASHED: self._running = False
                 case SnakeEvent.HIT_APPLE: self._snake_hit_apple()
-    
+
     def _snake_did_move(self):
         self._next_direction = SnakeDirection.FORWARD
         self._spawn_sprites()
@@ -86,12 +90,13 @@ class Game:
         self.apple.position = self.generate_new_apple_position()
         self.snake.grow_node()
         self._delay *= self.config.game.DELAY_MULTIPLIER
+        self.score.increase()
         self._snake_did_move()
-    
+
     def _spawn_sprites(self):
-        self.display.draw_sprites([self.apple, *self.snake.blocks])
+        self.display.draw_sprites([self.apple, *self.snake.blocks, self.score])
         sleep(self._delay)
-    
+
     def generate_new_apple_position(self) -> SpritePosition:
         x = randrange(0, self.config.window.WINDOW_SIZE.WIDTH, self.apple.surface.get_width())
         y = randrange(0, self.config.window.WINDOW_SIZE.HEIGHT, self.apple.surface.get_height())

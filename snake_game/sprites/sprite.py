@@ -12,7 +12,7 @@ class Sprite:
     @property
     def position(self) -> SpritePosition:
         return SpritePosition(self._position_x, self._position_y)
-    
+
     @position.setter
     def position(self, value : SpritePosition):
         self._position_x = value.X
@@ -22,4 +22,5 @@ class Sprite:
         self.img_path = img_path
         self._position_x = 0
         self._position_y = 0
-        self.surface = pygame.image.load(img_path).convert()
+        self.surface = pygame.image.load(img_path).convert() \
+            if img_path != None else None

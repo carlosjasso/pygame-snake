@@ -14,10 +14,10 @@ setup(
     author="Carlos Jasso",
     author_email="contact@carlosjasso.dev",
     package_dir={"": "snake_game"},
-    packages=find_packages(where="src"),
+    packages=find_packages(where="snake_game"),
     entry_points={
         "console_scripts": [
-            "snake=snake:main"
+            "snake=snake_game.main:main"
         ]
     }
 )
