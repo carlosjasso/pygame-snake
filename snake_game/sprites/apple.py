@@ -1,6 +1,6 @@
 from pathlib import Path
 from sprites import Sprite
-from data.types import SpritePosition, WindowSize
+from utils.types import SpritePosition, WindowSize
 
 class Apple(Sprite):
     _field : WindowSize

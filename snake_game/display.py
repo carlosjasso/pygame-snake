@@ -3,8 +3,8 @@ from pygame.event import Event
 from pygame import Surface
 from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, K_UP, K_DOWN, K_LEFT, K_RIGHT
 from sprites import Sprite
-from data.enum import DisplayEvent
-from data.types import Color, WindowSize
+from utils.enum import DisplayEvent
+from utils.types import Color, WindowSize
 
 class Display:
     #region Attributes & Properties

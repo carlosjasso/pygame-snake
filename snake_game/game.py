@@ -4,8 +4,8 @@ from random import randrange
 from snake import Snake
 from configuration import Configuration
 from display import Display
-from data.enum import SnakeDirection, DisplayEvent, SnakeEvent
-from data.types import SpritePosition
+from utils.enum import SnakeDirection, DisplayEvent, SnakeEvent
+from utils.types import SpritePosition
 from sprites import Apple, Score
 
 class Game:
@@ -98,8 +98,8 @@ class Game:
         sleep(self._delay)
 
     def generate_new_apple_position(self) -> SpritePosition:
-        x = randrange(0, self.config.window.WINDOW_SIZE.WIDTH, self.apple.surface.get_width())
-        y = randrange(0, self.config.window.WINDOW_SIZE.HEIGHT, self.apple.surface.get_height())
+        x = randrange(0, self.config.window.WINDOW_SIZE.WIDTH, self.apple.width)
+        y = randrange(0, self.config.window.WINDOW_SIZE.HEIGHT, self.apple.height)
         if len([b for b in self.snake.blocks if b.position.X == x and b.position.Y == y]) > 0:
             return self.generate_new_apple_position()
         else: return SpritePosition(x, y)

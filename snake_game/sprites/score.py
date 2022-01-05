@@ -1,7 +1,7 @@
 import pygame
 from pygame.font import Font
 from sprites import Sprite
-from data.types import Color, WindowSize, SpritePosition
+from utils.types import Color, WindowSize, SpritePosition
 
 class Score(Sprite):
     _score : int
@@ -22,7 +22,7 @@ class Score(Sprite):
     def _update_surface(self) -> None:
         self.surface = self._font.render(f"Score: {self._score}", True, self.font_color)
         self.position = SpritePosition(
-            X = self._field.WIDTH - self.surface.get_width() - 10,
+            X = self._field.WIDTH - self.width - 10,
             Y = 10
         )
 
