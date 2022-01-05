@@ -6,7 +6,7 @@ from configuration import Configuration
 from display import Display
 from utils.enum import SnakeDirection, DisplayEvent, SnakeEvent
 from utils.types import SpritePosition
-from sprites import Apple, Score
+from sprites import Apple, Score, GameOver
 
 class Game:
     #region Attributes & Properties
@@ -79,7 +79,7 @@ class Game:
         while self._running:
             match self.snake.slither(self.apple.position, self._next_direction):
                 case SnakeEvent.MOVED: self._snake_did_move()
-                case SnakeEvent.CRASHED: self._running = False
+                case SnakeEvent.CRASHED: self._snake_crashed()
                 case SnakeEvent.HIT_APPLE: self._snake_hit_apple()
 
     def _snake_did_move(self):
@@ -92,6 +92,11 @@ class Game:
         self._delay *= self.config.game.DELAY_MULTIPLIER
         self.score.increase()
         self._snake_did_move()
+
+    def _snake_crashed(self):
+        self._running = False
+        self.display.draw_sprites([GameOver(self.config.window.WINDOW_SIZE)])
+        sleep(10)
 
     def _spawn_sprites(self):
         self.display.draw_sprites([self.apple, *self.snake.blocks, self.score])
